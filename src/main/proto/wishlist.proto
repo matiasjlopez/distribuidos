@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "io.grpc.tp1";
+option java_outer_classname = "WishListProto";
+option objc_class_prefix = "WL";
+
+
+service WishListService {
+
+    rpc AddElement(UserElement) returns (WishList) {} //Parameter UserElement -> user + element, returns the updated WishList for given user.
+
+    rpc GetWishList(User) returns (WishList) {} //Parameter user, returns a WishList for given user.
+
+    rpc DeleteElement(UserElement) returns (WishList) {} //Parameter UserElement -> user + element, returns the updated WishList for given user.
+}
+
+message WishList {
+
+    repeated Element element = 1;
+}
+
+message Element {
+    string name = 1;
+}
+
+message UserElement {
+
+    User user = 1;
+
+    Element element = 2;
+}
+
+message User {
+    string user = 1;
+}
