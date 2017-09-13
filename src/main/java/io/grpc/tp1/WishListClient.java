@@ -45,10 +45,40 @@ public class WishListClient {
 
         try {
             wishList = blockingStub.addElement(userElement);
-//            logger.info("Wishlist from user: " + user);
             System.out.println("Wishlist from user: " + user);
-//            logger.info(" ");
-//            logger.info(String.valueOf(wishList));
+            System.out.println(String.valueOf(wishList));
+        } catch (StatusRuntimeException e) {
+            e.printStackTrace();
+            logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
+        }
+    }
+
+    public void getWishList(String userName) {
+        User user = User.newBuilder().setUser(userName).build();
+
+        WishList wishList;
+
+        try {
+            wishList = blockingStub.getWishList(user);
+            System.out.println("Wishlist from user: " + userName);
+            System.out.println(String.valueOf(wishList));
+        } catch (StatusRuntimeException e) {
+            e.printStackTrace();
+            logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
+        }
+    }
+
+    public void deleteElement(String user, String element) {
+        UserElement userElement = UserElement.newBuilder()
+                .setUser(User.newBuilder().setUser(user))
+                .setElement(Element.newBuilder().setName(element))
+                .build();
+
+        WishList wishList;
+
+        try {
+            wishList = blockingStub.deleteElement(userElement);
+            System.out.println("Wishlist from " + user);
             System.out.println(String.valueOf(wishList));
         } catch (StatusRuntimeException e) {
             e.printStackTrace();
@@ -63,6 +93,12 @@ public class WishListClient {
             switch (args[0]) {
                 case "addElement":
                     client.addElement(args[1], args[2]);
+                    break;
+                case "getWishList":
+                    client.getWishList(args[1]);
+                    break;
+                case "deleteElement":
+                    client.deleteElement(args[1], args[2]);
                     break;
             }
         } finally {

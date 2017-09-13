@@ -74,27 +74,52 @@ public class WishListServer {
                 elementList.add(request.getElement());
                 wishList = WishList.newBuilder().addAllElement(elementList).build();
                 this.wishLists.put(user, wishList);
-                responseObserver.onNext(wishList);
+            } else {
+                wishList = WishList.newBuilder()
+                            .addElement(Element.newBuilder().setName(request.getElement().getName()))
+                            .build();
+                this.wishLists.put(user, wishList);
+            }
+
+            responseObserver.onNext(wishList);
+            responseObserver.onCompleted();
+        }
+
+        @Override
+        public void getWishList(User request, StreamObserver<WishList> responseObserver) {
+            if(this.wishLists.containsKey(request)) {
+                responseObserver.onNext(this.wishLists.get(request));
             } else {
                 responseObserver.onNext(WishList.newBuilder()
-                        .addElement(Element.newBuilder().setName(request.getElement().getName()))
-                        .build());
+                                            .addElement(Element.newBuilder().setName("You dont have a wishlist, please create one"))
+                                            .build());
             }
 
             responseObserver.onCompleted();
         }
 
         @Override
-        public void getWishList(User request, StreamObserver<WishList> responseObserver) {
-
-        }
-
-        @Override
         public void deleteElement(UserElement request, StreamObserver<WishList> responseObserver) {
+            User user = request.getUser();
+            WishList wishList;
+            if(this.wishLists.containsKey(user)) {
+                wishList = this.wishLists.get(user);
+                List<Element> elementList = new ArrayList<>(wishList.getElementList());
+                elementList.remove(request.getElement());
+                wishList = WishList.newBuilder().addAllElement(elementList).build();
+                this.wishLists.put(user, wishList);
+            } else {
+                wishList = WishList.newBuilder()
+                        .addElement(Element.newBuilder().setName("You dont have a wishlist, please create one"))
+                        .build();
+            }
 
+            responseObserver.onNext(wishList);
+            responseObserver.onCompleted();
         }
 
     }
+
 
     public static void main(String[] args) throws IOException, InterruptedException {
 
